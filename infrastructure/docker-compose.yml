@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:16-alpine
+    networks:
+      - appnetwork
+    environment:
+      POSTGRES_DB: devdb
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devuser -d devdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ../backend
+    networks:
+      - appnetwork
+    env_file: ../backend/.env
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '8000:8000'
+    restart: on-failure
+    command: >
+      sh -c "python manage.py migrate &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+
+  frontend:
+    build: ../frontend
+    networks:
+      - appnetwork
+    ports:
+      - '80:80'
+    depends_on:
+      - backend
+
+networks:
+  appnetwork:
+    driver: bridge
+
+volumes:
+  postgres_data:
