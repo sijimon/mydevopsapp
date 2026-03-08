@@ -12,6 +12,17 @@ services:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/sijimon/projects/mydevopsapp:/home/sijimon/projects/mydevopsapp
+    networks:
+      - appnetwork
+      - jenkins_default
+
+
+networks:
+  appnetwork:
+    external: true
+    name: infrastructure_appnetwork
+  jenkins_default:
+    driver: bridge
 
 volumes:
   jenkins_home:
