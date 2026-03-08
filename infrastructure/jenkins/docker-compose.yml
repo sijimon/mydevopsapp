@@ -6,9 +6,12 @@ services:
     ports:
       - '8080:8080'
       - '50000:50000'
+    environment:
+      - JAVA_OPTS=-Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
+      - /home/sijimon/projects/mydevopsapp:/home/sijimon/projects/mydevopsapp
 
 volumes:
   jenkins_home:
