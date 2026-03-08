@@ -29,7 +29,7 @@ pipeline {
                     export DB_NAME=devdb
                     export DB_USER=devuser
                     export DB_PASSWORD=devpass
-                    export DB_HOST=localhost
+                    export DB_HOST=infrastructure-db-1
                     export DB_PORT=5432
                     python manage.py test
                 '''
@@ -106,15 +106,9 @@ pipeline {
         }
         success {
             echo '🎉 Full pipeline completed successfully!'
-            mail to: 'your@email.com',
-                 subject: "✅ Build #${BUILD_NUMBER} passed",
-                 body: "Pipeline completed successfully.\nBuild: ${BUILD_URL}"
         }
         failure {
-            echo '🚨 Pipeline failed!'
-            mail to: 'your@email.com',
-                 subject: "❌ Build #${BUILD_NUMBER} failed",
-                 body: "Pipeline failed at stage.\nCheck: ${BUILD_URL}"
+            echo '🚨 Pipeline failed! - Check console output above'
         }
     }
 }
