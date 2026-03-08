@@ -21,7 +21,14 @@ services:
     build: ../../backend
     networks:
       - prod_network
-    env_file: .env
+    environment:
+      SECRET_KEY: prod-secret-key-must-be-strong
+      DEBUG: "False"
+      DB_NAME: proddb
+      DB_USER: produser
+      DB_PASSWORD: prodpass
+      DB_HOST: db
+      DB_PORT: "5432"
     depends_on:
       db:
         condition: service_healthy

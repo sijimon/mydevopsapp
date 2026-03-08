@@ -21,7 +21,14 @@ services:
     build: ../../backend
     networks:
       - appnetwork
-    env_file: .env
+    environment:
+      SECRET_KEY: dev-secret-key-change-me
+      DEBUG: "True"
+      DB_NAME: devdb
+      DB_USER: devuser
+      DB_PASSWORD: devpass
+      DB_HOST: db
+      DB_PORT: "5432"
     depends_on:
       db:
         condition: service_healthy

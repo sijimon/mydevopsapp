@@ -21,7 +21,14 @@ services:
     build: ../../backend
     networks:
       - qa_network
-    env_file: .env
+    environment:
+      SECRET_KEY: qa-secret-key-change-me
+      DEBUG: "False"
+      DB_NAME: qadb
+      DB_USER: qauser
+      DB_PASSWORD: qapass
+      DB_HOST: db
+      DB_PORT: "5432"
     depends_on:
       db:
         condition: service_healthy
