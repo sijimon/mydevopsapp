@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:16-alpine
+    networks:
+      - qa_network
+    environment:
+      POSTGRES_DB: qadb
+      POSTGRES_USER: qauser
+      POSTGRES_PASSWORD: qapass
+    volumes:
+      - qa_postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5433:5432'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qauser -d qadb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ../../backend
+    networks:
+      - qa_network
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '8001:8000'
+    restart: on-failure
+    command: >
+      sh -c "python manage.py migrate &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+
+  frontend:
+    build: ../../frontend
+    networks:
+      - qa_network
+    ports:
+      - '81:80'
+    depends_on:
+      - backend
+
+networks:
+  qa_network:
+    driver: bridge
+
+volumes:
+  qa_postgres_data:
